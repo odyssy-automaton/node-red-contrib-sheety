@@ -1,0 +1,205 @@
+<script type="text/javascript">
+    RED.nodes.registerType("node-sheety", {
+        category: "💾_data",
+        color: "#fab2c5",
+        defaults: {
+            name: { value: undefined },
+            table: { value: undefined, required: true },
+            itemName: { value: undefined, required: true },
+            appUrl: { value: undefined, required: true },
+            tableType: { value: "msg" },
+            action: { value: "get" },
+            filter: { value: undefined, required: false },
+            filterType: { value: "msg" },
+            record: { value: undefined, required: false },
+            recordType: { value: "msg" },
+            // records: { value: undefined, required: false },
+            // recordsType: { value: "msg" },
+            output: { value: undefined, required: false }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "file.png",
+        align: "left",
+        paletteLabel: "Sheety",
+        label: function () {
+            return this.name || "Sheety";
+        },
+        oneditprepare: function () {
+            $("#node-input-name").typedInput({
+                default: "str",
+                types: ["str"],
+                type: "str"
+            });
+
+            $("#node-input-appUrl").typedInput({
+                default: "str",
+                types: ["str"],
+                type: "str"
+            });
+
+            $("#node-input-table").typedInput({
+                default: "msg",
+                types: ["str", "msg"],
+                typeField: $("#node-input-tableType")
+            });
+            $("#node-input-itemName").typedInput({
+                default: "str",
+                types: ["str"],
+                type: "str"
+            });
+            $("#node-input-filter").typedInput({
+                default: "str",
+                //types: ["msg", "json", "str"],
+                types: ["str"],
+                typeField: $("#node-input-filterType")
+            });
+            $("#node-input-record").typedInput({
+                default: "json",
+                types: ["json"],
+                typeField: $("#node-input-recordType")
+            });
+            // $("#node-input-records").typedInput({
+            //     default: "json",
+            //     types: ["json"],
+            //     typeField: $("#node-input-recordsType")
+            // });
+            // $("#node-input-output").typedInput({
+            //     default: "msg",
+            //     types: ["msg"],
+            //     type: "msg"
+            // });
+
+            $("#node-input-action").change(function () {
+                $(".get, .post, .put, .delete").hide();
+                let actionValue = $(this).val();
+                $("." + actionValue).show();
+
+                switch (actionValue) {
+                    case "get":
+                    case "post":
+                    case "put":
+                    case "delete":
+                        $("#node-input-record").typedInput("show");
+                        break;
+                    // case "put":
+                    // case "delete":
+                    //     $("#node-input-records").typedInput("show");
+                    //     break;
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    .input-info {
+        font-size: 12px;
+        padding-left: 104px;
+        font-style: italic;
+    }
+</style>
+
+<script type="text/x-red" data-template-name="node-sheety">
+    <div class="form-row" style="min-width:600px;">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name">
+    </div>
+    
+    <br>
+    <b>Sheety settings</b>
+
+    <div class="form-row" style="min-width:600px;">
+        <label for="node-input-appUrl"><i class="icon-tag"></i> App Url</label>
+        <input type="text" id="node-input-appUrl" style="width:70%;" placeholder="App Url (no leading slash)">
+    </div>
+
+  
+    <div class="form-row">
+        <label for="node-input-table"><i class="fa fa-table"></i> Table</label>
+        <input type="text" id="node-input-table" style="width: 70%" placeholder="">
+        <input type="hidden" id="node-input-tableType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-itemName"><i class="fa fa-itemName"></i> Item Name</label>
+        <input type="text" id="node-input-itemName" style="width: 70%" placeholder="">
+        <input type="hidden" id="node-input-itemName">
+    </div>
+  
+    <br>
+    <b>Request settings</b>
+  
+    <div class="form-row">
+        <br>
+        <label for="node-input-action"><i class="fa fa-tasks"></i> Action</label>
+        <select id="node-input-action" style="width: 34%">
+            <option value="get">Get Record</option>
+            <option value="post">Add Record</option>
+            <option value="put">Update (put) Record</option>
+            <option value="delete">Delete Record</option>
+        </select>
+    </div>
+  
+    <div class="form-row list">
+      <label for="node-input-filter"><i class="fa fa-sign-in"></i> Filter</label>
+      <input type="text" id="node-input-filter" style="width: 70%" placeholder="payload"/>
+      <input type="hidden" id="node-input-filterType">
+    </div>
+  
+    <div class="form-row get post delete put">
+      <label for="node-input-record"><i class="fa fa-sign-in"></i> Record</label>
+      <input type="text" id="node-input-record" style="width: 70%" placeholder="payload"/>
+      <input type="hidden" id="node-input-recordType">
+    </div>
+  
+    <!-- <div class="form-row delete put">
+      <label for="node-input-records"><i class="fa fa-sign-in"></i> Records</label>
+      <input type="text" id="node-input-records" style="width: 70%" placeholder="payload"/>
+      <input type="hidden" id="node-input-recordsType">
+    </div> -->
+  
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>
+    </div>
+  </script>
+
+<script type="text/x-red" data-help-name="node-sheety">
+    <p>Manipulate a Google spreadhseet with Sheety API. </p>
+  
+    <h3>Details</h3>
+    <p>Properties</p>
+    <p>App Url: Project url from sheety website </p>
+    <p>Table: tab name in google spread sheet </p>
+    
+    <!-- <dl class="message-properties">
+        <dt>Config <span class="property-type">config</span></dt>
+        <dd>information from an Airtable app: ID and API key</dd>
+        <dt>Table <span class="property-type">string</span></dt>
+        <dd>ID of the target app, such as "appXXXXXXXXXXXXXX"</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+-->
+    <h3>Methods</h3>
+    
+    <p>
+      <code>Get record</code> returns json object with data from table field. Returns specific row if filter is provided</i>.
+    </p>
+    <p>
+        <code>Add records</code> adds new row and returns them.
+    </p>
+
+  <!--
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://airtable.com/api">Airtable</a> - API reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+  
+    <h3>Tracking</h3>
+    <p>This node is likely to display an error message if no key is configured in the VISEO Bot Maker project.
+        If such an error appears, please get a key <a href="https://key.bot.viseo.io/">here</a>.
+    </p> -->
+  </script>
