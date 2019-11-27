@@ -39,6 +39,7 @@ async function input(RED, node, data, config) {
         break;
     }
     // var msg = { payload: result, originalMessage: data }
+    // TODO: if data.payload is not an object this will not work
     data.payload.sheetData = result;
     return node.send(data);
   } catch (error) {
